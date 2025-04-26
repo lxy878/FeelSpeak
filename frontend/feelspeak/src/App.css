@@ -1,38 +1,174 @@
-.App {
-  text-align: center;
+/* App Container */
+.app-container {
+  display: flex;
+  height: 100vh; /* Full height of the viewport */
+  margin: 0;
+  padding: 0;
+}
+/* Top Navigation Bar */
+.top-navbar {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f8f9fa;
+    align-items: center;
+    padding: 10px 20px;
+    height: 60px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.top-navbar h1 {
+    font-size: 24px;
+    margin: 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.top-buttons {
+  display: flex; /* Align buttons horizontally */
+  gap: 10px; /* Add spacing between buttons */
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.top-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.top-button:hover {
+    background-color: #0056b3;
+}
+
+/* Left-Side Navigation Bar */
+.left-navbar {
+  width: 150px; /* Fixed width for the navigation bar */
+  background-color: #333;
+  color: white;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: flex-start;
+  height: 100%; /* Full height of the page */
+}
+
+.left-navbar h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.nav-links {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+}
+
+.nav-links li {
+  margin-bottom: 15px;
+}
+
+.nav-links a {
+  display: block;
   color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.App-link {
-  color: #61dafb;
+.nav-links a:hover {
+  transform: scale(1.05); /* Slight zoom effect on hover */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Main Content */
+.main-content {
+  flex: 1; /* Take up the remaining space */
+  padding: 20px;
+  overflow-y: auto;
+  background-color: rgb(131, 197, 192);
+  height: 100%;
+}
+
+/* Language Select Row */
+.language-select-row {
+  display: flex;
+  align-items: center; /* Align items vertically */
+  gap: 20px; /* Add spacing between the dropdowns */
+  margin-bottom: 20px; /* Add spacing below the row */
+}
+
+.language-select-row label {
+  display: flex;
+  flex-direction: column; /* Stack label and dropdown vertically */
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Textarea Styling */
+textarea {
+  width: 100%; /* Make the textarea take the full width of the container */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  background-color: rgb(131, 197, 192);
+  border-radius: 5px;
+  resize: vertical; /* Allow vertical resizing only */
+  margin-top: 10px; /* Add spacing above the textarea */
+  box-sizing: border-box; /* Include padding and border in the width calculation */
+}
+
+.language-select-row select {
+  padding: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 5px; /* Add spacing between label and dropdown */
+}
+
+/* Translation Box */
+.translation-box{
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 20px;
+  font-size: 16px;
+  line-height: 1.5;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 300px; /* Minimum width */
+  min-height: 150px; /* Minimum height */
+  overflow-y: auto; /* Add scroll if content overflows vertically */
+}
+
+.definitions-container {
+  position: fixed; /* Make it a floating window */
+  top: 20px; /* Distance from the top of the viewport */
+  right: 20px; /* Distance from the right of the viewport */
+  width: 300px; /* Set a fixed width */
+  max-height: 400px; /* Set a maximum height */
+  overflow-y: auto; /* Add a scrollbar if content overflows vertically */
+  background-color: #f9f9f9; /* Light background color */
+  border: 1px solid #ccc; /* Add a border */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow for better visibility */
+  padding: 15px; /* Add padding inside the container */
+  z-index: 1000; /* Ensure it stays on top of other elements */
+}
+
+.edition-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px; /* Add spacing between sections */
+  padding: 10px;
+}
+
+.left-section, .right-section {
+  flex: 1; /* Take up equal space */
+  max-width: 45%; /* Limit the width */
+  padding: 10px;
+  border-radius: 5px;
 }
