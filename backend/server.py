@@ -1,52 +1,95 @@
 from flask import Flask, request, jsonify
-from google.cloud import storage
-import os
+from flask_socketio import SocketIO, emit
+from flask_cors import CORS
+from langdetect import detect
+import aiTranslator as at
+import string
+import requests
+from sentiment import sentiment_real_time
 
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*")
+CORS(app)
 
-# Configure Google Cloud Storage
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "path/to/your-service-account-key.json"
-BUCKET_NAME = "your-bucket-name"
+@socketio.on("start_sentiment")
+def sentiment_stream(data):
+    sentences = data.get("sentences", [])
+    if not sentences:
+        emit("error", {"message": "No sentences provided"})
+        return
 
-# Initialize Google Cloud Storage client
-storage_client = storage.Client()
-bucket = storage_client.bucket(BUCKET_NAME)
+    # Stream sentiment results in real-time
+    for result in sentiment_real_time(sentences):
+        print(result)
+        emit("sentiment", result)
 
-@app.route('/uploadRecording', methods=['POST'])
-def upload_recording():
-    try:
-        # Check if the request contains a file
-        if 'audio' not in request.files:
-            return jsonify({"error": "No audio file provided"}), 400
+    # Notify the client that sentiment analysis is complete
+    emit("sentiment_complete", {"message": "Sentiment analysis complete"})
 
-        audio_file = request.files['audio']
-        if audio_file.filename == '':
-            return jsonify({"error": "No selected file"}), 400
+@app.route("/translate", methods=["POST"])
+def translate():
+    data = request.json
+    text = data.get("text", "")
+    lang_from = data.get("lang_from", detect(text))  # Detect language if not provided
+    lang_to = data.get("lang_to", "en")
+    sentences = at.run(lang_from=lang_from, lang_to=lang_to, text=text)
+    print(f'Translation Done')
+    return jsonify(sentences)
 
-        # Save the file to Google Cloud Storage
-        blob = bucket.blob(audio_file.filename)
-        blob.upload_from_file(audio_file)
-        blob.make_public()  # Optional: Make the file publicly accessible
+@socketio.on("start_translation")
+def translate_stream(data):
+    text = data.get("text", "")
+    lang_from = data.get("lang_from", detect(text))
+    lang_to = data.get("lang_to", "en")
+    print(f'Stream Translation Started')
 
-        return jsonify({
-            "message": "Recording uploaded successfully",
-            "file_url": blob.public_url
-        }), 200
+    # Stream translations sentence by sentence
+    for result in at.run_stream(lang_from=lang_from, lang_to=lang_to, text=text):
+        print(result)
+        emit("translation", result)  # Send each translation to the client
+    emit("translation_complete", {"message": "Translation complete"})  # Notify when done
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+@socketio.on("voice_translation")
+def voice_translation(data):
+    audio_file = data.get("audio_file", None)
+    if audio_file:
+        # Process the audio file and perform translation
+        # This is a placeholder for the actual implementation
+        print(f'Voice Translation Started')
+        # Here you would convert the audio to text, translate it, and send back the result
+        emit("translation", {"message": "Voice translation result"})
+    else:
+        emit("error", {"message": "No audio file provided"})
 
-@app.route('/listRecordings', methods=['GET'])
-def list_recordings():
-    try:
-        # List all files in the bucket
-        blobs = bucket.list_blobs()
-        recordings = [{"name": blob.name, "url": blob.public_url} for blob in blobs]
+@app.route("/dictionary", methods=["GET"])
+def dictionary():
+    data = request.args
+    word = data.get("word", "")
+    # Remove punctuation from the word
+    word = word.translate(str.maketrans("", "", string.punctuation))
+    print(f'Fetching dictionary for word: {word}')
+    lang_to = data.get("lang_to", "en")
+    format = {
+        "word": "...", 
+        "definition": "...",
+        "lang_from": "...", 
+        "lang_to": "...", 
+        "translation": ["...","..."]
+    }
+    
+    key= "AIzaSyDje-PZD58qUnELYR_-QPQLVjl7rhdGIho"
+    url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={key}'
+    response = requests.post(url,headers={'Content-Type': 'application/json'}, json={
+        "contents": [{
+            "parts": [{"text": f'the word \'{word}\' in {lang_to}. use the format: {format} only.'}],
+        }]
+    })
 
-        return jsonify({"recordings": recordings}), 200
+    response_json = response.json()
+    json = response_json['candidates'][0]["content"]["parts"][0]["text"]
+    
+    return jsonify({"json": json.replace("```", "").strip("json").strip("\n")})  # Return the API response as JSON
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)

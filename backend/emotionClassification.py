@@ -1,5 +1,6 @@
 from transformers import pipeline
 
+# may need to remove
 def detect_emotion(text):
     # Load pre-trained emotion classification pipeline
     classifier = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base")
