@@ -1,1 +1,8 @@
 note.md
+backend/results/checkpoint-63
+backend/results/runs
+.vscode
+backend/__pycache__
+backend/results
+backend/logs
+backend/test
