@@ -3,6 +3,7 @@ from datasets import load_dataset
 
 #  27 emotions
 
+# may remove it
 # Load dataset and tokenizer
 tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased", num_labels=27)

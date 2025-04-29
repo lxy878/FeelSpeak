@@ -12,6 +12,8 @@ def run(input_audio="./test/audio.mp3"):
     transcription = transcribe_audio_wav2vec(output_wav)
     print(f"Transcription: {transcription}")
     
+    # Restore punctuation in the transcription
+    # testing in multiple languages
     restore_punctuation_text = restore_punctuation(transcription)
     print(f"Transcription with punctuation: {restore_punctuation_text}")
 

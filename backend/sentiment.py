@@ -46,6 +46,6 @@ def sentiment_real_time(sentences=[]):
 if __name__ == "__main__":
     try:
         # Input audio file path
-        sentiment()
+        sentiment_real_time()
     except Exception as e:
         print(f"Error: {e}")

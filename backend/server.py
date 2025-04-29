@@ -6,6 +6,7 @@ import aiTranslator as at
 import string
 import requests
 from sentiment import sentiment_real_time
+from ai_punctuation import restore_punctuation, has_punctuation
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -41,6 +42,11 @@ def translate_stream(data):
     text = data.get("text", "")
     lang_from = data.get("lang_from", detect(text))
     lang_to = data.get("lang_to", "en")
+    
+    if not has_punctuation(text):
+        # If the text is recorded, we need to restore punctuation
+        text = restore_punctuation(text)
+        print(f'Punctuation Restoration Done')
     print(f'Stream Translation Started')
 
     # Stream translations sentence by sentence
@@ -89,7 +95,6 @@ def dictionary():
     json = response_json['candidates'][0]["content"]["parts"][0]["text"]
     
     return jsonify({"json": json.replace("```", "").strip("json").strip("\n")})  # Return the API response as JSON
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

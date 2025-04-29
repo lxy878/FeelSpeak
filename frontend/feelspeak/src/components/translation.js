@@ -1,45 +1,55 @@
 import React from "react";
 import languages from "../assets/languages.json";
 
-function Translation({  translatedText, inputText, sourceLang, targetLang }) {
+function Translation({inputText, sourceLang, targetLang, setInputs, handleTranslateStream }) {
 
-    return (<><div>
-                <h2>Translation Mode</h2>
-                <div>
-                    <label>
-                        Source Language:
-                        <select value={sourceLang} onChange={(e) => setSourceLang(e.target.value)}>
-                            {languages.map((lang) => (
-                                <option key={lang.code} value={lang.code}>
-                                    {lang.name}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
+    return (<><div id="translation">
+                <div className="language-select-row">
+                    <div>
+                        <label>
+                            From:
+                            <select
+                                value={sourceLang}
+                                onChange={(e) => setInputs(e)}
+                            >
+                                {languages.map((lang) => (
+                                    <option key={lang.code} value={lang.code}>
+                                        {lang.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>
+                            To:
+                            <select
+                                value={targetLang}
+                                onChange={(e) => setInputs(e)}
+                            >
+                                {languages.map((lang) => (
+                                    <option key={lang.code} value={lang.code}>
+                                        {lang.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
                 </div>
-                <div>
-                    <label>
-                        Target Language:
-                        <select value={targetLang} onChange={(e) => setTargetLang(e.target.value)}>
-                            {languages.map((lang) => (
-                                <option key={lang.code} value={lang.code}>
-                                    {lang.name}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-                </div>
+
                 <textarea
-                    rows="5"
-                    cols="50"
+                    rows="10"
                     placeholder="Enter text to translate..."
                     value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
+                    onChange={(e) => setInputs(e)}
                 ></textarea>
                 <br />
-                <button onClick={handleTranslate}>Translate</button>
-                <h2>Translated Text:</h2>
-                <p>{translatedText}</p>
+                <button onClick={handleTranslateStream}>Translate</button>
+                <h3>Translations:</h3>
+                <div className="translation-box">
+                    <p>{arrayTranalatedText.join(" ")}</p>
+                </div>
             </div></>)
 }
 

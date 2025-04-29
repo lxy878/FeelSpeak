@@ -12,6 +12,7 @@ function App() {
     const [isEditMode, setIsEditMode] = useState(false); // State to toggle between modes
     const [arraySourceText, setArraySourceText] = useState([]);
     const [arrayTranalatedText, setArrayTranslatedText] = useState([]);
+    const [isRecording, setIsRecording] = useState(false);
 
     // Translate function using Axios
     const handleTranslate = async () => {
@@ -28,11 +29,61 @@ function App() {
         }
     };
 
+    // Voice-to-text recording function
+    // add: button press
+    const startRecording = () => {
+        if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+            alert("Your browser does not support speech recognition.");
+            return;
+        }
+
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = sourceLang; // Set the language for recognition
+        recognition.interimResults = true; // Show interim results while speaking
+        recognition.continuous = false; // Stop after one phrase
+
+        recognition.onstart = () => {
+            setIsRecording(true);
+            console.log("Recording started...");
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = Array.from(event.results)
+                .filter((result) => result.isFinal)
+                .map((result) => result[0].transcript)
+                .join("");
+            setInputText((prev) => {
+                const current = prev + " " + transcript; // Append the transcript to the input text
+                return current.trim();
+            }); // Append the transcript to the input text
+        };
+
+        recognition.onerror = (event) => {
+            console.error("Speech recognition error:", event.error);
+        };
+
+        recognition.onend = async () => {
+            if (isRecording) {
+                // Restart recognition automatically if still recording
+                console.log("Recognition ended, restarting...");
+                recognition.start();
+            } else {
+                console.log("Recording stopped.");
+            }
+        };
+
+        recognition.start();
+    };
+
+    const stopRecording = () => {
+        setIsRecording(false);
+        console.log("Recording manually stopped.");
+    };
+
     // Real-time translation using WebSocket
     const handleTranslateStream = () => {
         setArraySourceText([]);
         setArrayTranslatedText([]);
-
         const socket = io("http://localhost:5000");
         socket.emit("start_translation", {
             text: inputText,
@@ -147,7 +198,10 @@ function App() {
                             }}
                         ></textarea>
                         <br />
-                        <button onClick={handleTranslateStream}>Translate</button>
+                        <button onClick={handleTranslateStream} disabled={!inputText.trim()}>Translate</button>
+                        <button onClick={isRecording? stopRecording : startRecording}>
+                            {isRecording ? "Recording..." : "Start Recording"}
+                        </button>
                         <h3>Translations:</h3>
                         <div className="translation-box">
                             <p>{arrayTranalatedText.join(" ")}</p>

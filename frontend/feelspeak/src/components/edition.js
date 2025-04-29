@@ -19,6 +19,7 @@ function Edition({ arraySourceText, arrayTranalatedText, sourceLang, targetLang 
             const response = await axios.get(`http://localhost:5000/dictionary?word=${word}&lang_to=${targetLang}`);
             const data = response.data.json;
             const jsonData = typeof data === "string" ? JSON.parse(data) : data;
+            console.log("Dictionary data:", jsonData);
             setDictionary(jsonData || {});
         } catch (error) {
             console.error("Error fetching dictionary data:", error);
