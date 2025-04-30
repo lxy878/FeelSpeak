@@ -96,8 +96,7 @@
 .language-select-row {
   display: flex;
   align-items: center; /* Align items vertically */
-  gap: 20px; /* Add spacing between the dropdowns */
-  margin-bottom: 20px; /* Add spacing below the row */
+  gap: 10px; /* Add spacing between the dropdowns */ 
 }
 
 .language-select-row label {
@@ -171,4 +170,52 @@ textarea {
   max-width: 45%; /* Limit the width */
   padding: 10px;
   border-radius: 5px;
+}
+
+.switch-mode-button {
+  margin-left: auto; /* Push the button to the right */
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.switch-mode-button:hover {
+  background-color: #0056b3;
+}
+
+.translate-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.translate-button:hover {
+  background-color: #0056b3;
+}
+
+.translate-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.translate-section {
+  display: flex;
+  justify-content: space-between; /* Push notice to the left and button to the right */
+  align-items: center; /* Align items vertically */
+  margin-top: 10px; /* Add spacing above the section */
+}
+.translation-notice {
+  color: #007bff;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0; /* Remove default paragraph margin */
 }

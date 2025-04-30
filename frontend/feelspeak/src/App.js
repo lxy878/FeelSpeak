@@ -13,21 +13,8 @@ function App() {
     const [arraySourceText, setArraySourceText] = useState([]);
     const [arrayTranalatedText, setArrayTranslatedText] = useState([]);
     const [isRecording, setIsRecording] = useState(false);
-
-    // Translate function using Axios
-    const handleTranslate = async () => {
-        try {
-            const response = await axios.post("http://localhost:5000/translate", {
-                text: inputText,
-                lang_from: sourceLang,
-                lang_to: targetLang,
-            });
-            setArraySourceText(response.data.source);
-            setArrayTranslatedText(response.data.translation);
-        } catch (error) {
-            console.error("Error translating text:", error);
-        }
-    };
+    const [isVoiceMode, setIsVoiceMode] = useState(false); // State to toggle between Text and Voice modes
+    const [isTranslating, setIsTranslating] = useState(false);
 
     // Voice-to-text recording function
     // add: button press
@@ -82,6 +69,7 @@ function App() {
 
     // Real-time translation using WebSocket
     const handleTranslateStream = () => {
+        setIsTranslating(true);
         setArraySourceText([]);
         setArrayTranslatedText([]);
         const socket = io("http://localhost:5000");
@@ -98,11 +86,13 @@ function App() {
 
         socket.on("translation_complete", (data) => {
             console.log(data.message);
+            setIsTranslating(false); // Translation ends
             socket.disconnect();
         });
 
         socket.on("connect_error", (error) => {
             console.error("WebSocket connection error:", error);
+            setIsTranslating(false); // Handle errors
         });
     };
 
@@ -185,8 +175,15 @@ function App() {
                                     </select>
                                 </label>
                             </div>
+                            {isVoiceMode && (
+                            <button className="switch-mode-button" onClick={isRecording ? stopRecording : startRecording}>
+                                    {isRecording ? "Recording..." : "Start Recording"}
+                                </button>
+                            )}
+                            <button className="switch-mode-button" onClick={() => setIsVoiceMode((prev) => !prev)}>
+                                {isVoiceMode ? "Switch to Text Mode" : "Switch to Voice Mode"}
+                            </button>
                         </div>
-
                         <textarea
                             rows="10"
                             placeholder="Enter text to translate..."
@@ -196,12 +193,17 @@ function App() {
                                 setArraySourceText([]);
                                 setArrayTranslatedText([]);
                             }}
+                            disabled={isVoiceMode} // Disable textarea in Voice Mode
                         ></textarea>
-                        <br />
-                        <button onClick={handleTranslateStream} disabled={!inputText.trim()}>Translate</button>
-                        <button onClick={isRecording? stopRecording : startRecording}>
-                            {isRecording ? "Recording..." : "Start Recording"}
-                        </button>
+                        <div className="translation-section">
+                            <button
+                                className="translate-button"
+                                onClick={handleTranslateStream}
+                                disabled={!inputText.trim() || isTranslating} // Disable button while translating
+                            >
+                                {isTranslating ? "Language Translating..." : "Translate"}
+                            </button>
+                        </div>
                         <h3>Translations:</h3>
                         <div className="translation-box">
                             <p>{arrayTranalatedText.join(" ")}</p>

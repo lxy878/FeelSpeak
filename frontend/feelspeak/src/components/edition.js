@@ -16,7 +16,7 @@ function Edition({ arraySourceText, arrayTranalatedText, sourceLang, targetLang 
     const handleClick = async (word) => {
         setClickedWord(word);
         try {
-            const response = await axios.get(`http://localhost:5000/dictionary?word=${word}&lang_to=${targetLang}`);
+            const response = await axios.get(`http://localhost:5000/dictionary?word=${word}&lang_from=${sourceLang}&lang_to=${targetLang}`);
             const data = response.data.json;
             const jsonData = typeof data === "string" ? JSON.parse(data) : data;
             console.log("Dictionary data:", jsonData);
@@ -141,7 +141,7 @@ function Edition({ arraySourceText, arrayTranalatedText, sourceLang, targetLang 
                 {clickedWord && (
                     <div className="definitions-container">
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <h3>Definitions for "{clickedWord}":</h3>
+                            <h3>"{clickedWord}":</h3>
                             <button
                                 onClick={() => setClickedWord("")}
                                 style={{
@@ -156,6 +156,10 @@ function Edition({ arraySourceText, arrayTranalatedText, sourceLang, targetLang 
                                 X
                             </button>
                         </div>
+                        <p style={{ fontStyle: "italic" }}>
+                            <strong>Definition:</strong> {dictionary.definition}
+                        </p>
+                        <p><strong>Translations:</strong></p>
                         <ul>
                             {dictionary.translation?.map((definition, index) => (
                                 <li

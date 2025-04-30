@@ -75,6 +75,7 @@ def dictionary():
     word = word.translate(str.maketrans("", "", string.punctuation))
     print(f'Fetching dictionary for word: {word}')
     lang_to = data.get("lang_to", "en")
+    lang_from = data.get("lang_from", "en")
     format = {
         "word": "...", 
         "definition": "...",
@@ -87,7 +88,7 @@ def dictionary():
     url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={key}'
     response = requests.post(url,headers={'Content-Type': 'application/json'}, json={
         "contents": [{
-            "parts": [{"text": f'the word \'{word}\' in {lang_to}. use the format: {format} only.'}],
+            "parts": [{"text": f'the definition of word \'{word}\' must be in {lang_from} and translation must be in {lang_to}. use the format: {format} only.'}],
         }]
     })
 
